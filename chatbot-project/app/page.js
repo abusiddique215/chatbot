@@ -1,11 +1,23 @@
 import { useState, useRef, useEffect } from 'react';
-import { TextField, Button, Paper, Typography, Box } from '@mui/material';
+import { TextField, Button, Paper, Typography, Box, CircularProgress, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ChatMessage from '../components/ChatMessage';
+import ErrorMessage from '../components/ErrorMessage';
+
+const quickReplies = [
+  "How do I start a practice interview?",
+  "What programming languages are covered?",
+  "How can I track my progress?",
+  "Is Headstarter really free?",
+];
 
 export default function Home() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: 'Welcome to Headstarter Support! How can I assist you with our free interview preparation platform today?' },
+  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const chatContainerRef = useRef(null);
 
   useEffect(() => {
@@ -13,6 +25,17 @@ export default function Home() {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const clearChat = () => {
+    setMessages([
+      { role: 'assistant', content: 'Chat history cleared. How can I assist you with Headstarter today?' },
+    ]);
+  };
+
+  const handleQuickReply = (message) => {
+    setInput(message);
+    handleSubmit({ preventDefault: () => {} });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +45,7 @@ export default function Home() {
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInput('');
     setIsLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('/api/chat', {
@@ -48,49 +72,83 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { role: 'assistant', content: 'Sorry, there was an error processing your request.' },
-      ]);
+      setError('An error occurred while processing your request. Please try again later.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 600, margin: 'auto', padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        Headstarter Support Assistant
-      </Typography>
-      <Paper
-        ref={chatContainerRef}
-        elevation={3}
-        sx={{ height: 400, overflowY: 'auto', padding: 2, marginBottom: 2 }}
-      >
-        {messages.map((message, index) => (
-          <ChatMessage key={index} message={message} />
-        ))}
-      </Paper>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your message here..."
-          disabled={isLoading}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ marginTop: 1 }}
-          disabled={isLoading}
+    <>
+      <a href="#chat-input" className="sr-only focus:not-sr-only">
+        Skip to chat input
+      </a>
+      <Box sx={{ maxWidth: 600, margin: 'auto', padding: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Typography variant="h4">
+            Headstarter Free Support Assistant
+          </Typography>
+          <IconButton onClick={clearChat} aria-label="Clear chat history">
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+        {error && <ErrorMessage message={error} />}
+        <Paper
+          ref={chatContainerRef}
+          elevation={3}
+          sx={{ height: 400, overflowY: 'auto', padding: 2, marginBottom: 2 }}
+          aria-live="polite"
+          aria-label="Chat messages"
         >
-          {isLoading ? 'Sending...' : 'Send'}
-        </Button>
-      </form>
-    </Box>
+          {messages.map((message, index) => (
+            <ChatMessage key={index} message={message} />
+          ))}
+          {isLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          )}
+        </Paper>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            Quick Questions:
+          </Typography>
+          {quickReplies.map((reply, index) => (
+            <Button
+              key={index}
+              variant="outlined"
+              size="small"
+              onClick={() => handleQuickReply(reply)}
+              sx={{ mr: 1, mb: 1 }}
+            >
+              {reply}
+            </Button>
+          ))}
+        </Box>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            id="chat-input"
+            fullWidth
+            variant="outlined"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your message here..."
+            disabled={isLoading}
+            aria-label="Chat input"
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 1 }}
+            disabled={isLoading}
+            aria-label="Send message"
+          >
+            {isLoading ? 'Sending...' : 'Send'}
+          </Button>
+        </form>
+      </Box>
+    </>
   );
 }

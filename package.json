@@ -1,8 +1,13 @@
-{
-  "dependencies": {
-    "@emotion/react": "^11.13.0",
-    "@emotion/styled": "^11.13.0",
-    "@mui/material": "^5.16.6",
-    "openai": "^4.54.0"
-  }
+"dependencies": {
+  "react": "^18",
+  "react-dom": "^18",
+  "next": "14.2.5",
+  "@mui/material": "^5.14.0",
+  "@emotion/react": "^11.11.0",
+  "@emotion/styled": "^11.11.0",
+  "openai": "^4.0.0"
+},
+"devDependencies": {
+  "eslint": "^8",
+  "eslint-config-next": "14.2.5"
 }

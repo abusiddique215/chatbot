@@ -1,4 +1,6 @@
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Avatar } from '@mui/material';
+import PersonIcon from '@mui/icons-material/Person';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 
 export default function ChatMessage({ message }) {
   const isUser = message.role === 'user';
@@ -11,6 +13,11 @@ export default function ChatMessage({ message }) {
         mb: 2,
       }}
     >
+      {!isUser && (
+        <Avatar sx={{ bgcolor: 'primary.main', mr: 1 }}>
+          <SmartToyIcon />
+        </Avatar>
+      )}
       <Box
         sx={{
           maxWidth: '70%',
@@ -21,6 +28,11 @@ export default function ChatMessage({ message }) {
       >
         <Typography variant="body1">{message.content}</Typography>
       </Box>
+      {isUser && (
+        <Avatar sx={{ bgcolor: 'secondary.main', ml: 1 }}>
+          <PersonIcon />
+        </Avatar>
+      )}
     </Box>
   );
 }
