@@ -7,10 +7,13 @@ import SendIcon from '@mui/icons-material/Send';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useSpring, animated } from 'react-spring';
 import { useDrag } from '@use-gesture/react';
+import LoadingDots from './LoadingDots';
 
 export default function ChatWindow({ onClose }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showInitialContent, setShowInitialContent] = useState(true);
   const messagesEndRef = useRef(null);
 
   const x = useMotionValue(0);
@@ -28,9 +31,14 @@ export default function ChatWindow({ onClose }) {
   });
 
   const suggestionTopics = [
-    "How do I start a practice interview?",
-    "What programming languages are covered?",
-    "How can I track my progress?"
+    "Practice Interview",
+    "Resume Tips",
+    "Technical Skills",
+    "Soft Skills",
+    "Job Search",
+    "Interview Prep",
+    "Career Advice",
+    "Coding Challenge"
   ];
 
   const scrollToBottom = () => {
@@ -41,8 +49,10 @@ export default function ChatWindow({ onClose }) {
 
   const handleSend = async (message) => {
     if (message.trim() === '') return;
+    setShowInitialContent(false);
     setMessages(prev => [...prev, { text: message, sender: 'user' }]);
     setInput('');
+    setIsLoading(true);
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -54,6 +64,8 @@ export default function ChatWindow({ onClose }) {
     } catch (error) {
       console.error('Error:', error);
       setMessages(prev => [...prev, { text: "Sorry, I couldn't process that request.", sender: 'bot' }]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,8 +83,8 @@ export default function ChatWindow({ onClose }) {
         width: 280,
         height: 420,
         perspective: 1000,
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3), 0 10px 20px rgba(0, 0, 0, 0.2)',
         userSelect: 'none',
+        zIndex: 9999,
       }}
       whileTap={{ cursor: 'grabbing' }}
     >
@@ -82,80 +94,106 @@ export default function ChatWindow({ onClose }) {
           height: '100%',
           backgroundColor: '#1c2235',
           borderRadius: '16px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 10px 50px rgba(0, 0, 0, 0.5), 0 20px 60px rgba(0, 0, 0, 0.3)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
         }}
       >
-        <Box sx={{ bgcolor: '#060609', color: 'white', p: 0.75, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ bgcolor: '#060609', color: 'white', p: 0.75, display: 'flex', justifyContent: 'space-between', alignItems: 'center', userSelect: 'none' }}>
           <Typography variant="subtitle2" sx={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold' }}>Headstarter Assistant</Typography>
           <IconButton onClick={onClose} sx={{ color: 'white', p: 0.25 }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </Box>
 
-        <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 1, display: 'flex', flexDirection: 'column' }}>
-          {messages.length === 0 && (
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 1, display: 'flex', flexDirection: 'column', userSelect: 'none' }}>
+          {showInitialContent ? (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
+              initial={{ opacity: 1 }}
+              animate={{ opacity: showInitialContent ? 1 : 0 }}
+              transition={{ duration: 0.5 }}
             >
-              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1, height: 30 }}>
-                <img src="/headstarter-logo.png" alt="Headstarter Logo" style={{ height: '100%', width: 'auto' }} />
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 1 }}>
+                <img src="/headstarter-logo.png" alt="Headstarter Logo" style={{ width: '30%', height: 'auto' }} />
               </Box>
-              <Typography variant="body2" sx={{ mb: 1, textAlign: 'center', color: 'white', fontWeight: 'bold' }}>
-                Enhance your interview preparation with Headstarter Assistant.
+              <Typography variant="body1" align="center" gutterBottom sx={{ color: 'white', fontSize: '0.9rem', fontWeight: 'bold' }}>
+                How can I assist you today?
               </Typography>
-              <Typography variant="body2" sx={{ mb: 1, mt: 2, textAlign: 'center', color: 'white', fontWeight: 'bold' }}>
-                Select a topic to get started:
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mb: 1 }}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 0.5 }}>
                 {suggestionTopics.map((topic, index) => (
-                  <motion.div
+                  <Button
                     key={index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                  >
-                    <Button 
-                      variant="outlined" 
-                      onClick={() => handleSend(topic)}
-                      sx={{ 
-                        textTransform: 'none',
-                        color: '#26D0CE',
+                    variant="outlined"
+                    size="small"
+                    onClick={() => handleSend(topic)}
+                    sx={{
+                      margin: '2px',
+                      fontSize: '0.6rem',
+                      color: '#26D0CE',
+                      borderColor: '#26D0CE',
+                      borderRadius: '20px',
+                      padding: '2px 8px',
+                      fontWeight: 'bold',
+                      textTransform: 'none',
+                      '&:hover': {
+                        backgroundColor: 'rgba(38, 208, 206, 0.1)',
                         borderColor: '#26D0CE',
-                        fontSize: '0.6rem',
-                        padding: '1px 8px',
-                        borderRadius: '50px',
-                        transition: 'all 0.3s',
-                        fontWeight: 'bold',
-                        '&:hover': {
-                          bgcolor: 'rgba(38, 208, 206, 0.2)',
-                          borderColor: '#26D0CE',
-                        }
-                      }}
-                    >
-                      {topic}
-                    </Button>
-                  </motion.div>
+                      },
+                    }}
+                  >
+                    {topic}
+                  </Button>
                 ))}
               </Box>
             </motion.div>
+          ) : (
+            <>
+              {messages.map((msg, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                    mb: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      maxWidth: '70%',
+                      p: 1,
+                      borderRadius: 2,
+                      bgcolor: msg.sender === 'user' ? '#26D0CE' : '#1A2980',
+                      color: 'white',
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{msg.text}</Typography>
+                  </Box>
+                </Box>
+              ))}
+              {isLoading && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'flex-start',
+                    mb: 1,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      maxWidth: '70%',
+                      p: 1,
+                      borderRadius: 2,
+                      bgcolor: '#1A2980',
+                      color: 'white',
+                    }}
+                  >
+                    <LoadingDots />
+                  </Box>
+                </Box>
+              )}
+            </>
           )}
-          {messages.map((msg, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Typography variant="body2" sx={{ mb: 0.25, alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start', maxWidth: '70%', p: 0.5, borderRadius: 1, bgcolor: msg.sender === 'user' ? '#26D0CE' : '#1A2980', color: 'white', fontWeight: 'bold' }}>
-                {msg.text}
-              </Typography>
-            </motion.div>
-          ))}
           <div ref={messagesEndRef} />
         </Box>
 

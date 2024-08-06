@@ -20,11 +20,11 @@ export default function ChatMessage({ message }) {
           maxWidth: '70%',
           p: 1,
           borderRadius: 2,
-          bgcolor: isUser ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+          bgcolor: isUser ? '#26D0CE' : '#1A2980',
           color: '#ffffff',
         }}
       >
-        <Typography variant="body1">{message.content}</Typography>
+        <Typography variant="body2">{message.content}</Typography>
       </Box>
       {isUser && <Avatar sx={{ ml: 1 }} src="/path-to-user-avatar.jpg" />}
     </Box>

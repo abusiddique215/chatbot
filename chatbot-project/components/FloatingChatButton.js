@@ -45,6 +45,7 @@ export default function FloatingChatButton() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                zIndex: 9999,
               }}
               onClick={() => setIsOpen(true)}
             >
@@ -63,7 +64,16 @@ export default function FloatingChatButton() {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {isOpen && <ChatWindow onClose={() => setIsOpen(false)} />}
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ChatWindow onClose={() => setIsOpen(false)} />
+          </motion.div>
+        )}
       </AnimatePresence>
     </>
   );
