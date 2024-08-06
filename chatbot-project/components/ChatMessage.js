@@ -20,7 +20,8 @@ export default function ChatMessage({ message }) {
           maxWidth: '70%',
           p: 1,
           borderRadius: 2,
-          bgcolor: isUser ? 'primary.light' : 'grey.200',
+          bgcolor: isUser ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+          color: '#ffffff',
         }}
       >
         <Typography variant="body1">{message.content}</Typography>
