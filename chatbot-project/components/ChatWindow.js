@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Box, IconButton, TextField, Typography } from '@mui/material';
+import { Box, IconButton, TextField, Typography, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
 import ChatMessage from './ChatMessage';
@@ -11,9 +11,42 @@ export default function ChatWindow({ onClose }) {
   const [input, setInput] = useState('');
   const chatContainerRef = useRef(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission and send the message
+    if (!input.trim()) return;
+
+    const userMessage = { role: 'user', content: input };
+    setMessages([...messages, userMessage]);
+    setInput('');
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch response');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantMessage = { role: 'assistant', content: '' };
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        assistantMessage.content += chunk;
+        setMessages(prevMessages => [...prevMessages.slice(0, -1), assistantMessage]);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error (e.g., show an error message to the user)
+    }
   };
 
   return (

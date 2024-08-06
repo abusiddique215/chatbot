@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server'
 import openai from '../../../utils/openai'
+import trainingData from '../../../utils/trainingData'
 
-const systemPrompt = `You are an AI assistant for Headstarter, a free platform focused on technical interview preparation. Provide concise, accurate responses to user queries about:
+const systemPrompt = `You are an AI assistant for Headstarter, a free platform focused on technical interview preparation. You have been trained on the following data:
 
-1. Account management (e.g., sign-up process, profile updates)
-2. Interview practice sessions (e.g., types of practice interviews available, how to access them)
-3. Technical issues (e.g., platform access, browser compatibility)
-4. Platform features (e.g., available resources, practice problem sets)
-5. Programming languages and technologies covered
-6. Progress tracking and performance metrics
+${trainingData.map(item => `${item.topic}: ${item.content}`).join('\n')}
 
-Always maintain a professional, helpful tone. Emphasize that Headstarter is completely free to use. If you're unsure about specific Headstarter features, suggest the user check the official website or contact human support for the most up-to-date information.`
+Provide concise, accurate responses to user queries based on this information. Always maintain a professional, helpful tone. Emphasize that Headstarter is completely free to use. If you're unsure about specific Headstarter features, suggest the user check the official website or contact human support for the most up-to-date information.`
 
 export async function POST(req) {
   const data = await req.json()
