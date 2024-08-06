@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
 import { TextField, Button, Paper, Typography, Box, CircularProgress, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
