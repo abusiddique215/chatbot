@@ -24,10 +24,10 @@ export default function FloatingChatButton() {
       <AnimatePresence>
         {!isOpen && (
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ duration: 0.3, type: 'spring', stiffness: 260, damping: 20 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <Fab
               color="primary"
@@ -46,6 +46,7 @@ export default function FloatingChatButton() {
                 justifyContent: 'center',
                 alignItems: 'center',
                 zIndex: 9999,
+                transform: 'none',
               }}
               onClick={() => setIsOpen(true)}
             >
@@ -66,10 +67,10 @@ export default function FloatingChatButton() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
           >
             <ChatWindow onClose={() => setIsOpen(false)} />
           </motion.div>
