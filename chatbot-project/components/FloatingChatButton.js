@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Fab } from '@mui/material';
-import ChatIcon from '@mui/icons-material/Chat';
+import { Fab, Box } from '@mui/material';
 import ChatWindow from './ChatWindow';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FloatingChatButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,25 +21,50 @@ export default function FloatingChatButton() {
 
   return (
     <>
-      {!isOpen && (
-        <Fab
-          color="primary"
-          aria-label="chat"
-          sx={{
-            position: 'fixed',
-            bottom: 16,
-            right: 16,
-            bgcolor: '#26D0CE',
-            '&:hover': {
-              bgcolor: '#1A2980',
-            },
-          }}
-          onClick={() => setIsOpen(true)}
-        >
-          <ChatIcon />
-        </Fab>
-      )}
-      {isOpen && <ChatWindow onClose={() => setIsOpen(false)} />}
+      <AnimatePresence>
+        {!isOpen && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 0.3, type: 'spring', stiffness: 260, damping: 20 }}
+          >
+            <Fab
+              color="primary"
+              aria-label="chat"
+              sx={{
+                position: 'fixed',
+                bottom: 16,
+                right: 16,
+                bgcolor: '#1c2235',
+                '&:hover': {
+                  bgcolor: '#060609',
+                },
+                width: 56,
+                height: 56,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onClick={() => setIsOpen(true)}
+            >
+              <Box
+                component="img"
+                src="/noheadstarter.png"
+                alt="Headstarter Logo"
+                sx={{
+                  width: '70%',
+                  height: '70%',
+                  objectFit: 'contain',
+                }}
+              />
+            </Fab>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isOpen && <ChatWindow onClose={() => setIsOpen(false)} />}
+      </AnimatePresence>
     </>
   );
 }
