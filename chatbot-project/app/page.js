@@ -1,6 +1,6 @@
 'use client';
 
-import FloatingChatButton from '../components/FloatingChatButton';
+import Chatbot from '../components/Chatbot';
 import { Box, Typography, Container } from '@mui/material';
 
 export default function Home() {
@@ -19,9 +19,8 @@ export default function Home() {
         <Typography variant="body1" paragraph>
           Explore our services, connect with industry professionals, and take the first step towards your dream career.
         </Typography>
-        {/* Add more content here as needed */}
       </Box>
-      <FloatingChatButton />
+      <Chatbot />
     </Container>
   );
 }

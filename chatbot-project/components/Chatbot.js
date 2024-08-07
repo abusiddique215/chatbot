@@ -1,11 +1,8 @@
-'use client';
-
 import React, { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Fab, Box, CircularProgress } from '@mui/material';
 import config from '../config/chatbotConfig';
-
-const ChatWindow = lazy(() => import('./ChatWindow'));
+import ChatWindow from './ChatWindow';  // Import ChatWindow directly
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,11 +52,7 @@ export default function Chatbot() {
           </motion.div>
         )}
       </AnimatePresence>
-      {isOpen && (
-        <Suspense fallback={<CircularProgress />}>
-          <ChatWindow onClose={() => setIsOpen(false)} />
-        </Suspense>
-      )}
+      {isOpen && <ChatWindow onClose={() => setIsOpen(false)} />}
     </>
   );
 }
