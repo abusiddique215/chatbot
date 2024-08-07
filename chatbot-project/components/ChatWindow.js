@@ -60,10 +60,13 @@ export default function ChatWindow({ onClose }) {
         body: JSON.stringify({ message })
       });
       const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
       setMessages(prev => [...prev, { text: data.reply, sender: 'bot' }]);
     } catch (error) {
       console.error('Error:', error);
-      setMessages(prev => [...prev, { text: "Sorry, I couldn't process that request.", sender: 'bot' }]);
+      setMessages(prev => [...prev, { text: "Sorry, I couldn't process that request. Please try again later.", sender: 'bot' }]);
     } finally {
       setIsLoading(false);
     }

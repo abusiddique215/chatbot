@@ -10,8 +10,20 @@ Provide concise, accurate responses to user queries based on this information. A
 
 export async function POST(req) {
   const { message } = await req.json();
-  // Here you would typically process the message and generate a response
-  // For now, we'll just echo the message back
-  const reply = `You said: "${message}". This is a placeholder response.`;
-  return NextResponse.json({ reply });
+  
+  try {
+    const chatCompletion = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: message }
+      ],
+    });
+
+    const reply = chatCompletion.choices[0].message.content;
+    return NextResponse.json({ reply });
+  } catch (error) {
+    console.error('OpenAI API error:', error);
+    return NextResponse.json({ error: 'An error occurred while processing your request.' }, { status: 500 });
+  }
 }
